@@ -29,4 +29,10 @@ public class RiotAccountController {
         riotAccountService.findSummonerByNAMEAndTAG(gameName, tagLine);
         return null;
     }
+
+    @GetMapping("p={gameName}/t={tagLine}/matchHistory")
+    public ResponseEntity<SummonerDTO> getUserMatchHistory(@PathVariable("gameName") String gameName, @PathVariable("tagLine") String tagLine) throws IOException {
+        riotAccountService.findMatchHistory(gameName, tagLine);
+        return null;
+    }
 }

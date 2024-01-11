@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.domain.RiotAccount;
+import com.example.demo.exceptionHandling.MatchHistoryNotFoundException;
 import com.example.demo.exceptionHandling.RiotAccountNotFoundException;
 import com.example.demo.repository.RiotAccountRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,4 +61,28 @@ public class RiotAccountService {
             throw new RiotAccountNotFoundException(gameName, tagLine);
         }
     }
+
+    public void findMatchHistory(String gameName, String tagLine) throws IOException {
+        String riotAccountPuuid = findSummonerByNAMEAndTAG(gameName, tagLine);
+
+        URL url = new URL("https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/" + riotAccountPuuid + "/ids?start=0&count=" + "20" + "&api_key=" + lolApiKey);
+
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+
+        int responseCode = connection.getResponseCode();
+
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            StringBuilder sb = new StringBuilder();
+            Scanner scanner = new Scanner(connection.getInputStream());
+            while (scanner.hasNext()) {
+                sb.append(scanner.nextLine());
+            }
+            System.out.println(sb);
+        } else {
+            throw new MatchHistoryNotFoundException(gameName, tagLine);
+        }
+    }
+
+
 }

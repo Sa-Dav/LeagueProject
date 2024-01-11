@@ -36,4 +36,12 @@ public class GlobalExceptionHandler {
         log.info("Riot account not found with name and tag combination: " + e.getGameName() + "#" + e.getTagLine());
         return new ResponseEntity<>(List.of(validationError), HttpStatus.BAD_REQUEST);
     }
+
+
+    @ExceptionHandler(MatchHistoryNotFoundException.class)
+    public ResponseEntity<List<ValidationError>> handleMatchHistoryNotFoundException(MatchHistoryNotFoundException e){
+        ValidationError validationError = new ValidationError(e.getGameName(), "Riot account (" + e.getGameName() + "#" + e.getTagLine() + ") match history not found");
+        log.info("Riot account not found with name and tag combination: " + e.getGameName() + "#" + e.getTagLine());
+        return new ResponseEntity<>(List.of(validationError), HttpStatus.BAD_REQUEST);
+    }
 }
