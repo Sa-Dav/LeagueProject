@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RiotAccountRepository extends JpaRepository<RiotAccount, Long> {
 
-    @Query("SELECT r.puuid FROM RiotAccount r WHERE r.gameName = :gameName AND r.tagLine = :tagLine")
-    String findByGameNameAndTagLine(@Param("gameName") String gameName, @Param("tagLine") String tagLine);
+    @Query("SELECT r FROM RiotAccount r WHERE r.gameName = :gameName AND r.tagLine = :tagLine")
+    RiotAccount findByGameNameAndTagLine(@Param("gameName") String gameName, @Param("tagLine") String tagLine);
 }

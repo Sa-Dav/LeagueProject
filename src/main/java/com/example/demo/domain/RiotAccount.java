@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
@@ -19,16 +20,22 @@ public class RiotAccount {
     private String puuid;
     private String gameName;
     private String tagLine;
+    private String lastMatchId;
+    private LocalDateTime lastChange;
     @ManyToOne
     private Subscriber subscriber;
 
 
     @Override
     public String toString() {
-        return "UserAccount{" +
-                "puuid='" + puuid + '\'' +
+        return "RiotAccount{" +
+                "id=" + id +
+                ", puuid='" + puuid + '\'' +
                 ", gameName='" + gameName + '\'' +
                 ", tagLine='" + tagLine + '\'' +
+                ", lastMatchId='" + lastMatchId + '\'' +
+                ", lastChange=" + lastChange +
+                ", subscriber=" + subscriber +
                 '}';
     }
 }
