@@ -106,7 +106,7 @@ public class LolService {
         reader.close();
 
         JSONObject jsonObject = new JSONObject(String.valueOf(sb));
-
+//TODO Logika a statisztikához ban heylett
         getKey(jsonObject, "bans");
     }
 }

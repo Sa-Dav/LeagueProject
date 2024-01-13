@@ -44,4 +44,12 @@ public class GlobalExceptionHandler {
         log.info("Riot account not found with name and tag combination: " + e.getGameName() + "#" + e.getTagLine());
         return new ResponseEntity<>(List.of(validationError), HttpStatus.BAD_REQUEST);
     }
+
+
+    @ExceptionHandler(ThisAccountAlreadySubscribedException.class)
+    public ResponseEntity<List<ValidationError>> handleThisAccountAlreadySubscribedException(ThisAccountAlreadySubscribedException e){
+        ValidationError validationError = new ValidationError(e.getGameName(), "Riot account (" + e.getGameName() + ") already subscribed");
+        log.info("Riot account (" + e.getGameName() + ") already subscribed");
+        return new ResponseEntity<>(List.of(validationError), HttpStatus.BAD_REQUEST);
+    }
 }

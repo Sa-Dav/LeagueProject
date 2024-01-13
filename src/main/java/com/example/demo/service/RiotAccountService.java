@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
 
@@ -24,19 +25,24 @@ public class RiotAccountService {
 
     private RiotAccountRepository riotAccountRepository;
 
+    private LeagueGameService leagueGameService;
+
     @Value("${lol.apiKey}")
     private String lolApiKey;
 
     @Autowired
-    public RiotAccountService(RiotAccountRepository riotAccountRepository) {
+    public RiotAccountService(RiotAccountRepository riotAccountRepository, LeagueGameService leagueGameService) {
         this.riotAccountRepository = riotAccountRepository;
-
+        this.leagueGameService = leagueGameService;
     }
 
 
 
     public RiotAccount findSummonerByNAMEAndTAG(String gameName, String tagLine) throws IOException {
         RiotAccount alreadyExistMatch = riotAccountRepository.findByGameNameAndTagLine(gameName, tagLine);
+        System.out.println("------------------------------------------");
+        System.out.println(alreadyExistMatch);
+        System.out.println("------------------------------------------");
         if (alreadyExistMatch != null) {
             log.info("This account already stored in database");
             return alreadyExistMatch;
@@ -58,7 +64,11 @@ public class RiotAccountService {
             System.out.println(sb);
             ObjectMapper objectMapper = new ObjectMapper();
             RiotAccount riotAccount = objectMapper.readValue(String.valueOf(sb), RiotAccount.class);
-            riotAccount.setLastMatchId(checkLastMatch(riotAccount.getPuuid()));
+            riotAccount.setGameName(riotAccount.getGameName().replace(" ", ""));
+
+//            riotAccount.setLastMatchId(leagueGameService.getGameDetails(riotAccount.getPuuid());
+
+            riotAccount.setLastChange(LocalDateTime.now());
 
             riotAccountRepository.save(riotAccount);
             return riotAccount;
