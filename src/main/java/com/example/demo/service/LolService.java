@@ -36,6 +36,13 @@ public class LolService {
         System.out.println("1-----------------------");
         System.out.println(json.get(key));
 
+        JSONArray innerJSONA = (JSONArray) json.get(key);
+
+        for (int i = 0; i < innerJSONA.length(); i++) {
+            JSONObject jsonObject = (JSONObject) innerJSONA.get(i);
+            System.out.println(jsonObject.get("championId"));
+        }
+
 
         ObjectMapper objectMapper = new ObjectMapper();
 //        String jj = json.get(key).toString();

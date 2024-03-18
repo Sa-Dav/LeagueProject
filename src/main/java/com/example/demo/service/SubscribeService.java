@@ -64,7 +64,7 @@ public class SubscribeService {
                 lolService.readFileByMatchId(pureMatchId);
 
                 //TODO last game changes statistic
-//                emailSenderService.sendSimpleEmail(subscriberFromDTO.getEmail(), EMAIL_SUBJECT, EMAIL_BODY);
+                emailSenderService.sendSimpleEmail(subscriberFromDTO.getEmail(), EMAIL_SUBJECT, EMAIL_BODY);
 
                 listForSaveNewGame.add(currentRiotAccountInDB);
             }
