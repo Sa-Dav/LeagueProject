@@ -4,15 +4,19 @@ import com.example.demo.domain.LeagueGame;
 import com.example.demo.exceptionHandling.MatchNotFoundException;
 import com.example.demo.repository.LeagueGameRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.Iterator;
 import java.util.Scanner;
 
 @Service
@@ -20,16 +24,21 @@ import java.util.Scanner;
 @Slf4j
 public class LeagueGameService {
 
+    private LolService lolService;
     private LeagueGameRepository matchRepository;
 
     @Value("${lol.apiKey}")
     private String lolApiKey;
-
-    public LeagueGameService(LeagueGameRepository matchRepository) {
+    private static String helper = "";
+    @Autowired
+    public LeagueGameService(LolService lolService, LeagueGameRepository matchRepository) {
+        this.lolService = lolService;
         this.matchRepository = matchRepository;
     }
 
-    public String matchExist(String matchId) throws IOException {
+
+
+    public String matchExist(String matchId) throws IOException, JSONException {
         String alreadyExistMatch = matchRepository.findByMatchId(matchId);
         if (alreadyExistMatch != null) {
             log.info("This match already stored in database");
@@ -53,11 +62,80 @@ public class LeagueGameService {
             }
             writer.close();
 
-            matchRepository.save(new LeagueGame(matchId, pathToFile));
+            System.out.println(helper);
+            System.out.println("----------------------------------");
+//            LeagueGame savedLeagueGame =
+                    matchRepository.save(new LeagueGame(matchId, pathToFile, LocalDateTime.now(), helper));
+
             log.info("This match stored to database : " + matchId);
             return pathToFile;
         } else {
             throw new MatchNotFoundException(matchId);
+        }
+    }
+
+    public static void getKey(JSONObject json, String key) throws JSONException, IOException {
+
+        boolean has = json.has(key);
+        Iterator<?> keys;
+        String nextKey;
+
+        if (!has) {
+            keys = json.keys();
+            while (keys.hasNext()) {
+                nextKey = (String) keys.next();
+                try {
+                    if (json.get(nextKey) instanceof JSONObject) {
+                        getKey(json.getJSONObject(nextKey), key);
+
+
+                    } else if (json.get(nextKey) instanceof JSONArray) {
+                        JSONArray jsonArray = json.getJSONArray(nextKey);
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            String jsonarrayString = jsonArray.get(i).toString();
+                            JSONObject innerJSON = new JSONObject(jsonarrayString);
+                            getKey(innerJSON, key);
+                        }
+                    }
+
+                } catch (Exception e) {
+                    //TODO handle
+                }
+            }
+        } else {
+
+            if (key.equals("bans")) {
+                parseObjectBans(json, key);
+            } else {
+//                parseObjectStats(json, key);
+            }
+        }
+
+    }
+
+    public void readFileByMatchId(String matchID, String key) throws IOException, JSONException {
+        BufferedReader reader = new BufferedReader(new FileReader("E:\\lol_Project\\all_match\\" + matchID + ".txt"));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            sb.append(line);
+        }
+        reader.close();
+
+        JSONObject jsonObject = new JSONObject(String.valueOf(sb));
+//TODO Logika a statisztikához ban heylett
+        getKey(jsonObject, key);
+    }
+
+    public static void parseObjectBans(JSONObject json, String key) throws JSONException, IOException {
+//        System.out.println(json.has(key));
+
+        JSONArray innerJSONA = (JSONArray) json.get(key);
+
+        for (int i = 0; i < innerJSONA.length(); i++) {
+            JSONObject jsonObject = (JSONObject) innerJSONA.get(i);
+            helper += jsonObject.get("championId") + ",";
+
         }
     }
 }

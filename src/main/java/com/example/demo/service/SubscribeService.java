@@ -59,9 +59,10 @@ public class SubscribeService {
                 currentRiotAccountInDB.setLastChange(LocalDateTime.now());
 
                 String pureMatchId = updatedLastMatch.substring(2, updatedLastMatch.length() - 2);
-                String matchPath = leagueGameService.matchExist(pureMatchId);
+//                String matchPath =
+                        leagueGameService.matchExist(pureMatchId);
 
-                lolService.readFileByMatchId(pureMatchId);
+//                lolService.readFileByMatchId(pureMatchId, "bans");
 
                 //TODO last game changes statistic
                 emailSenderService.sendSimpleEmail(subscriberFromDTO.getEmail(), EMAIL_SUBJECT, EMAIL_BODY);

@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.SummonerDTO;
 import com.example.demo.service.LeagueGameService;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +24,7 @@ public class LeagueGameController {
     }
 
     @GetMapping("/m={matchID}")
-    public ResponseEntity<SummonerDTO> getMatch(@PathVariable("matchID") String matchID) throws IOException {
+    public ResponseEntity<SummonerDTO> getMatch(@PathVariable("matchID") String matchID) throws IOException, JSONException {
         System.out.println(leagueGameService.matchExist(matchID));
         return null;
     }

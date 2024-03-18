@@ -1,13 +1,25 @@
 package com.example.demo.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-@JsonIgnoreProperties(ignoreUnknown = true)
+import javax.persistence.*;
+
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 public class Teams {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String teamID;
     private Boolean win;
+    private String role;
+    private String champId;
+    @ManyToOne
+    private LeagueGame leagueGame;
 
     @Override
     public String toString() {
@@ -15,23 +27,5 @@ public class Teams {
                 "teamID='" + teamID + '\'' +
                 ", win=" + win +
                 '}';
-    }
-
-    public String getTeamID() {
-        return teamID;
-    }
-
-    public Teams setTeamID(String teamID) {
-        this.teamID = teamID;
-        return this;
-    }
-
-    public Boolean getWin() {
-        return win;
-    }
-
-    public Teams setWin(Boolean win) {
-        this.win = win;
-        return this;
     }
 }

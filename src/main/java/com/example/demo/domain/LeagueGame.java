@@ -6,7 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -22,21 +23,19 @@ public class LeagueGame {
 
     private String filePath;
 
-    private Date savedDate;
+    private LocalDateTime savedDate;
 
-    public LeagueGame(String matchId, String filePath) {
+    private String bans;
+
+    @OneToMany(mappedBy = "leagueGame", fetch = FetchType.LAZY)
+    private List<Teams> teams;
+
+
+    public LeagueGame(String matchId, String filePath, LocalDateTime savedDate, String bans) {
         this.matchId = matchId;
         this.filePath = filePath;
-    }
-
-    public LeagueGame setMatchId(String matchId) {
-        this.matchId = matchId;
-        return this;
-    }
-
-    public LeagueGame setFilePath(String filePath) {
-        this.filePath = filePath;
-        return this;
+        this.savedDate = savedDate;
+        this.bans = bans;
     }
 }
 
