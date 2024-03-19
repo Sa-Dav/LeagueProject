@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface LeagueGameRepository extends JpaRepository<LeagueGame, Long> {
-    @Query("SELECT l.filePath FROM LeagueGame l WHERE l.matchId = :matchId ")
-    String findByMatchId(@Param("matchId") String matchId);
+    @Query("SELECT l FROM LeagueGame l WHERE l.matchId = :matchId ")
+    LeagueGame findByMatchId(@Param("matchId") String matchId);
 }

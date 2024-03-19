@@ -29,7 +29,7 @@ public class LeagueGameService {
 
     @Value("${lol.apiKey}")
     private String lolApiKey;
-    private static String helper = "";
+    private static StringBuilder helper = new StringBuilder();
     @Autowired
     public LeagueGameService(LolService lolService, LeagueGameRepository matchRepository) {
         this.lolService = lolService;
@@ -38,8 +38,8 @@ public class LeagueGameService {
 
 
 
-    public String matchExist(String matchId) throws IOException, JSONException {
-        String alreadyExistMatch = matchRepository.findByMatchId(matchId);
+    public LeagueGame matchExist(String matchId) throws IOException, JSONException {
+        LeagueGame alreadyExistMatch = matchRepository.findByMatchId(matchId);
         if (alreadyExistMatch != null) {
             log.info("This match already stored in database");
             return alreadyExistMatch;
@@ -62,13 +62,14 @@ public class LeagueGameService {
             }
             writer.close();
 
-            System.out.println(helper);
-            System.out.println("----------------------------------");
-//            LeagueGame savedLeagueGame =
-                    matchRepository.save(new LeagueGame(matchId, pathToFile, LocalDateTime.now(), helper));
+            readFileByMatchId(matchId, "bans");
+
+//          LeagueGame savedLeagueGame =
+            LeagueGame leagueGame = matchRepository.save(new LeagueGame(matchId, pathToFile, LocalDateTime.now(), helper.toString()));
+            helper = new StringBuilder();
 
             log.info("This match stored to database : " + matchId);
-            return pathToFile;
+            return leagueGame;
         } else {
             throw new MatchNotFoundException(matchId);
         }
@@ -134,7 +135,7 @@ public class LeagueGameService {
 
         for (int i = 0; i < innerJSONA.length(); i++) {
             JSONObject jsonObject = (JSONObject) innerJSONA.get(i);
-            helper += jsonObject.get("championId") + ",";
+            helper.append(jsonObject.get("championId") + ",");
 
         }
     }

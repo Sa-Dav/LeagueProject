@@ -4,13 +4,13 @@ import com.example.demo.dto.SummonerDTO;
 import com.example.demo.service.EmailSenderService;
 import com.example.demo.service.LolService;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.mail.MessagingException;
 import java.io.IOException;
 import java.util.List;
 
@@ -39,8 +39,8 @@ public class LolController {
 //    }
 
     @GetMapping("/testMail")
-    public ResponseEntity<SummonerDTO> getGet() {
-        emailSenderService.sendEmail2("fundraiser20230824@gmail.com", "HI", List.of());
+    public ResponseEntity<SummonerDTO> getGet() throws MessagingException, IOException {
+        emailSenderService.sendEmail2("fundraiser20230824@gmail.com", "HI", List.of("AurelionSol","Darius","MasterYi","Diana","Zed","Zac","Malphite","Yuumi","Jinx","Vayne"));
         return null;
     }
 
