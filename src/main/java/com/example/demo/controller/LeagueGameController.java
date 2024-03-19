@@ -28,4 +28,10 @@ public class LeagueGameController {
         System.out.println(leagueGameService.matchExist(matchID));
         return null;
     }
+
+    @GetMapping("/jsonT")
+    public ResponseEntity<SummonerDTO> jsonT() throws IOException, JSONException {
+        leagueGameService.matchExist("EUN1_3547109679");
+        return null;
+    }
 }

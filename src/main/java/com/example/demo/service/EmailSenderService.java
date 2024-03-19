@@ -56,7 +56,7 @@ public class EmailSenderService {
         log.info("Mail send to: " + toEmail);;
     }
 
-    public void sendEmail2(String receiverEmailId, String subject, List<String> bannedChampions) throws MessagingException, IOException {
+    public void sendEmailRanked(String receiverEmailId, String subject, List<String> bannedChampions) throws MessagingException, IOException {
 
                 MimeMessage message = mailSender.createMimeMessage();
                 MimeMessageHelper helper = new MimeMessageHelper(message, true);

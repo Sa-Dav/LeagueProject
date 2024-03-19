@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.mail.MessagingException;
@@ -47,7 +46,7 @@ public class SubscribeService {
     }
 
 
-    @Scheduled(fixedDelay = 30000)
+//    @Scheduled(fixedDelay = 30000)
     public void asd() throws IOException, JSONException, MessagingException {
 
         List<SubscriberDTO> subscriberDTO = subscriberRepository.findSubscriberNewGame();
@@ -63,33 +62,28 @@ public class SubscribeService {
 
                 String pureMatchId = updatedLastMatch.substring(2, updatedLastMatch.length() - 2);
 
-                       LeagueGame leagueGame = leagueGameService.matchExist(pureMatchId);
-                    String leagueGameBansS = leagueGame.getBans();
-                       List<String> s = Arrays.asList(leagueGameBansS.split(","));
-                       List<Integer> ints = new ArrayList<>();
-                       if (s.size() > 1){
-                           for (int i = 0; i < s.size(); i++) {
-                               ints.add(Integer.parseInt(s.get(i)));
-                           }
-                       }
+                LeagueGame leagueGame = leagueGameService.matchExist(pureMatchId);
+                String leagueGameBansS = leagueGame.getBans();
+                List<String> s = Arrays.asList(leagueGameBansS.split(","));
+                List<Integer> ints = new ArrayList<>();
+                if (s.size() > 1) {
+                    for (int i = 0; i < s.size(); i++) {
+                        ints.add(Integer.parseInt(s.get(i)));
+                    }
+                }
 
 
-
-                System.out.println("--------------------------------------");
-                System.out.println(ints);
-                System.out.println("--------------------------------------");
                 List<String> bannedChamps = new ArrayList<>();
-                for (Integer i1:ints) {
+                for (Integer i1 : ints) {
                     ChampionByIDService championByIDService = new ChampionByIDService();
                     bannedChamps.add(championByIDService.championById(i1));
                 }
-                System.out.println("--------------------------------------");
-                System.out.println(bannedChamps);
-                System.out.println("--------------------------------------");
-//                lolService.readFileByMatchId(pureMatchId, "bans");
-
+                if (bannedChamps.size() > 1) {
+                    emailSenderService.sendEmailRanked(subscriberFromDTO.getEmail(), EMAIL_SUBJECT, bannedChamps);
+                }
                 //TODO last game changes statistic
-                emailSenderService.sendEmail2(subscriberFromDTO.getEmail(), EMAIL_SUBJECT, bannedChamps);
+                //TODO make statistic email
+
 
                 listForSaveNewGame.add(currentRiotAccountInDB);
             }

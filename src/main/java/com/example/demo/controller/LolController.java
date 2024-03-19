@@ -40,7 +40,7 @@ public class LolController {
 
     @GetMapping("/testMail")
     public ResponseEntity<SummonerDTO> getGet() throws MessagingException, IOException {
-        emailSenderService.sendEmail2("fundraiser20230824@gmail.com", "HI", List.of("AurelionSol","Darius","MasterYi","Diana","Zed","Zac","Malphite","Yuumi","Jinx","Vayne"));
+        emailSenderService.sendEmailRanked("fundraiser20230824@gmail.com", "HI", List.of("AurelionSol","Darius","MasterYi","Diana","Zed","Zac","Malphite","Yuumi","Jinx","Vayne"));
         return null;
     }
 

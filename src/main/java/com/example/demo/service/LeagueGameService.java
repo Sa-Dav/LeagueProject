@@ -1,8 +1,11 @@
 package com.example.demo.service;
 
 import com.example.demo.domain.LeagueGame;
+import com.example.demo.domain.Statistic;
 import com.example.demo.exceptionHandling.MatchNotFoundException;
 import com.example.demo.repository.LeagueGameRepository;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,17 +29,19 @@ public class LeagueGameService {
 
     private LolService lolService;
     private LeagueGameRepository matchRepository;
+    private StatisticService statisticService;
 
     @Value("${lol.apiKey}")
     private String lolApiKey;
     private static StringBuilder helper = new StringBuilder();
+    private static LeagueGame currentLeagueGame = new LeagueGame();
+
     @Autowired
-    public LeagueGameService(LolService lolService, LeagueGameRepository matchRepository) {
+    public LeagueGameService(LolService lolService, LeagueGameRepository matchRepository, StatisticService statisticService) {
         this.lolService = lolService;
         this.matchRepository = matchRepository;
+        this.statisticService = statisticService;
     }
-
-
 
     public LeagueGame matchExist(String matchId) throws IOException, JSONException {
         LeagueGame alreadyExistMatch = matchRepository.findByMatchId(matchId);
@@ -64,18 +69,21 @@ public class LeagueGameService {
 
             readFileByMatchId(matchId, "bans");
 
+
 //          LeagueGame savedLeagueGame =
-            LeagueGame leagueGame = matchRepository.save(new LeagueGame(matchId, pathToFile, LocalDateTime.now(), helper.toString()));
+            currentLeagueGame = matchRepository.save(new LeagueGame(matchId, pathToFile, LocalDateTime.now(), helper.toString()));
             helper = new StringBuilder();
+            readFileByMatchId(matchId, "participants");
+
 
             log.info("This match stored to database : " + matchId);
-            return leagueGame;
+            return currentLeagueGame;
         } else {
             throw new MatchNotFoundException(matchId);
         }
     }
 
-    public static void getKey(JSONObject json, String key) throws JSONException, IOException {
+    public void getKey(JSONObject json, String key) throws JSONException, IOException {
 
         boolean has = json.has(key);
         Iterator<?> keys;
@@ -107,8 +115,8 @@ public class LeagueGameService {
 
             if (key.equals("bans")) {
                 parseObjectBans(json, key);
-            } else {
-//                parseObjectStats(json, key);
+            } else if (key.equals("participants")) {
+                parseObjectParticipants(json, key);
             }
         }
 
@@ -139,4 +147,31 @@ public class LeagueGameService {
 
         }
     }
+
+    public void parseObjectParticipants(JSONObject json, String key) throws JSONException, IOException {
+//        System.out.println(json.has(key));
+
+        JSONArray innerJSONA = (JSONArray) json.get(key);
+
+//        ObjectMapper objectMapper = new ObjectMapper();
+        for (int i = 0; i < innerJSONA.length(); i++) {
+            JSONObject jsonObject = (JSONObject) innerJSONA.get(i);
+            System.out.println("---------------------------------------------------------------");
+            System.out.println(jsonObject.toString());
+            try {
+                // Create ObjectMapper instance
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                Statistic statistic = objectMapper.readValue(jsonObject.toString(), Statistic.class);
+                statistic.setLeagueGame(currentLeagueGame);
+                statisticService.saveStatistic(statistic);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+        }
+    }
+
+
 }

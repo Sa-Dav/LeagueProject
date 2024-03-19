@@ -28,7 +28,7 @@ public class LeagueGame {
     private String bans;
 
     @OneToMany(mappedBy = "leagueGame", fetch = FetchType.LAZY)
-    private List<Teams> teams;
+    private List<Statistic> statistic;
 
 
     public LeagueGame(String matchId, String filePath, LocalDateTime savedDate, String bans) {
