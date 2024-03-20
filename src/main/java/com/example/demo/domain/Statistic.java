@@ -15,6 +15,8 @@ public class Statistic {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String riotIdGameName;
+    private String riotIdTagline;
     private String individualPosition;
     private String championName;
     private int championId;
@@ -22,6 +24,10 @@ public class Statistic {
     private int timePlayed;
     private int totalDamageDealtToChampions;
     private Boolean win;
+    private int teamId;
+    private int assists;
+    private int deaths;
+    private int kills;
 
 
     @ManyToOne
@@ -31,6 +37,8 @@ public class Statistic {
     public String toString() {
         return "Statistic{" +
                 "id=" + id +
+                ", riotIdGameName='" + riotIdGameName + '\'' +
+                ", riotIdTagline='" + riotIdTagline + '\'' +
                 ", individualPosition='" + individualPosition + '\'' +
                 ", championName='" + championName + '\'' +
                 ", championId=" + championId +
@@ -38,7 +46,7 @@ public class Statistic {
                 ", timePlayed=" + timePlayed +
                 ", totalDamageDealtToChampions=" + totalDamageDealtToChampions +
                 ", win=" + win +
-                ", leagueGame=" + leagueGame +
+                ", teamId=" + teamId +
                 '}';
     }
 }

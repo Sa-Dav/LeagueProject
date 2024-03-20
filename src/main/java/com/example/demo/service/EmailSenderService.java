@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.domain.Statistic;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -12,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -56,7 +59,7 @@ public class EmailSenderService {
         log.info("Mail send to: " + toEmail);;
     }
 
-    public void sendEmailRanked(String receiverEmailId, String subject, List<String> bannedChampions) throws MessagingException, IOException {
+    public void sendEmailRanked(String receiverEmailId, String subject, List<String> bannedChampions, List<Statistic> statistics) throws MessagingException, IOException {
 
                 MimeMessage message = mailSender.createMimeMessage();
                 MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -65,16 +68,35 @@ public class EmailSenderService {
                 helper.setTo(receiverEmailId);
                 helper.setSubject(subject);
 
+String filePath = "E:\\intellij\\lol\\src\\main\\resources\\template.html";
                 // Read HTML template from file
-                String htmlContent = new String(Files.readAllBytes(Paths.get("E:\\intellij\\lol\\src\\main\\resources\\template.html")), StandardCharsets.UTF_8);
 
-                // Set the HTML content of the email
-                helper.setText(htmlContent, true);
 
-                // Add inline images
-                for (int i = 0; i < bannedChampions.size(); i++) {
-                    helper.addInline("ban" + (i + 1), new ClassPathResource("champion/" + bannedChampions.get(i) + ".png"));
-                }
+                HtmlMaker f = new HtmlMaker();
+                String a =  f.fullHTMLMakerNeedRewrite(statistics);
+        appendTableToHTML(filePath, a);
+
+        String htmlContent = new String(Files.readAllBytes(Paths.get(filePath)), StandardCharsets.UTF_8);
+        helper.setText(htmlContent, true);
+
+
+
+
+
+
+
+
+
+//                // Add inline images
+        for (int i = 0; i < bannedChampions.size(); i++) {
+            helper.addInline("ban" + (i + 1), new ClassPathResource("champion/" + bannedChampions.get(i) + ".png"));
+        }
+
+        for (int i = 0; i < statistics.size(); i++) {
+            helper.addInline("champ" + (i), new ClassPathResource("champion/" + statistics.get(i).getChampionName() + ".png"));
+        }
+        // Set the HTML content of the email
+
                 try {
                     mailSender.send(message);
                     System.out.println("Message Sent...Hurrey");
@@ -82,4 +104,13 @@ public class EmailSenderService {
                     exe.printStackTrace();
                 }
             }
+
+    public static void appendTableToHTML(String filePath, String tableHTML) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            writer.write(tableHTML);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
+
+    }

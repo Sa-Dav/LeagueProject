@@ -156,8 +156,6 @@ public class LeagueGameService {
 //        ObjectMapper objectMapper = new ObjectMapper();
         for (int i = 0; i < innerJSONA.length(); i++) {
             JSONObject jsonObject = (JSONObject) innerJSONA.get(i);
-            System.out.println("---------------------------------------------------------------");
-            System.out.println(jsonObject.toString());
             try {
                 // Create ObjectMapper instance
                 ObjectMapper objectMapper = new ObjectMapper();

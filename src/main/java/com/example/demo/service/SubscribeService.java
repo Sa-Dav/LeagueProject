@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.domain.LeagueGame;
 import com.example.demo.domain.RiotAccount;
+import com.example.demo.domain.Statistic;
 import com.example.demo.domain.Subscriber;
 import com.example.demo.dto.SubscriberCommand;
 import com.example.demo.dto.SubscriberDTO;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.mail.MessagingException;
@@ -30,6 +32,7 @@ public class SubscribeService {
     private RiotAccountService riotAccountService;
     private EmailSenderService emailSenderService;
     private LeagueGameService leagueGameService;
+    private StatisticService statisticService;
     private LolService lolService;
 
 
@@ -37,16 +40,17 @@ public class SubscribeService {
     private String lolApiKey;
 
     @Autowired
-    public SubscribeService(SubscriberRepository subscriberRepository, RiotAccountService riotAccountService, EmailSenderService emailSenderService, LeagueGameService leagueGameService, LolService lolService) {
+    public SubscribeService(SubscriberRepository subscriberRepository, RiotAccountService riotAccountService, EmailSenderService emailSenderService, LeagueGameService leagueGameService, StatisticService statisticService, LolService lolService) {
         this.subscriberRepository = subscriberRepository;
         this.riotAccountService = riotAccountService;
         this.emailSenderService = emailSenderService;
         this.leagueGameService = leagueGameService;
+        this.statisticService = statisticService;
         this.lolService = lolService;
     }
 
 
-//    @Scheduled(fixedDelay = 30000)
+    @Scheduled(fixedDelay = 30000)
     public void asd() throws IOException, JSONException, MessagingException {
 
         List<SubscriberDTO> subscriberDTO = subscriberRepository.findSubscriberNewGame();
@@ -64,11 +68,11 @@ public class SubscribeService {
 
                 LeagueGame leagueGame = leagueGameService.matchExist(pureMatchId);
                 String leagueGameBansS = leagueGame.getBans();
-                List<String> s = Arrays.asList(leagueGameBansS.split(","));
+                List<String> bans = Arrays.asList(leagueGameBansS.split(","));
                 List<Integer> ints = new ArrayList<>();
-                if (s.size() > 1) {
-                    for (int i = 0; i < s.size(); i++) {
-                        ints.add(Integer.parseInt(s.get(i)));
+                if (bans.size() > 1) {
+                    for (int i = 0; i < bans.size(); i++) {
+                        ints.add(Integer.parseInt(bans.get(i)));
                     }
                 }
 
@@ -78,11 +82,20 @@ public class SubscribeService {
                     ChampionByIDService championByIDService = new ChampionByIDService();
                     bannedChamps.add(championByIDService.championById(i1));
                 }
+
+
+                List<Statistic> statisticsForLeagueGame = statisticService.getStatisticFromLeagueGame(leagueGame.getId());
+
+
+
+
+
+
                 if (bannedChamps.size() > 1) {
-                    emailSenderService.sendEmailRanked(subscriberFromDTO.getEmail(), EMAIL_SUBJECT, bannedChamps);
+                    emailSenderService.sendEmailRanked(subscriberFromDTO.getEmail(), EMAIL_SUBJECT, bannedChamps, statisticsForLeagueGame);
                 }
-                //TODO last game changes statistic
-                //TODO make statistic email
+
+
 
 
                 listForSaveNewGame.add(currentRiotAccountInDB);

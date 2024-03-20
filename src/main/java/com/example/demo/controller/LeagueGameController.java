@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.SummonerDTO;
+import com.example.demo.service.EmailSenderService;
 import com.example.demo.service.LeagueGameService;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
@@ -19,8 +20,11 @@ public class LeagueGameController {
 
     private LeagueGameService leagueGameService;
 
-    public LeagueGameController(LeagueGameService leagueGameService) {
+    private EmailSenderService emailSenderService;
+
+    public LeagueGameController(LeagueGameService leagueGameService, EmailSenderService emailSenderService) {
         this.leagueGameService = leagueGameService;
+        this.emailSenderService = emailSenderService;
     }
 
     @GetMapping("/m={matchID}")
@@ -34,4 +38,10 @@ public class LeagueGameController {
         leagueGameService.matchExist("EUN1_3547109679");
         return null;
     }
+
+//    @GetMapping("/emailT")
+//    public ResponseEntity<SummonerDTO> emailT() throws IOException, JSONException, MessagingException {
+//        emailSenderService.sendEmailRanked("winderlox@gmail.com","asd", List.of("Darius","Zoe","Zac","Annie","Brand","Gnar","Kled","Elise","Jinx","Vayne"));
+//        return null;
+//    }
 }

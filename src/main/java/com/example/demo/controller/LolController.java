@@ -38,10 +38,10 @@ public class LolController {
 //        return null;
 //    }
 
-    @GetMapping("/testMail")
-    public ResponseEntity<SummonerDTO> getGet() throws MessagingException, IOException {
-        emailSenderService.sendEmailRanked("fundraiser20230824@gmail.com", "HI", List.of("AurelionSol","Darius","MasterYi","Diana","Zed","Zac","Malphite","Yuumi","Jinx","Vayne"));
-        return null;
-    }
+//    @GetMapping("/testMail")
+//    public ResponseEntity<SummonerDTO> getGet() throws MessagingException, IOException {
+//        emailSenderService.sendEmailRanked("fundraiser20230824@gmail.com", "HI", List.of("AurelionSol","Darius","MasterYi","Diana","Zed","Zac","Malphite","Yuumi","Jinx","Vayne"));
+//        return null;
+//    }
 
 }

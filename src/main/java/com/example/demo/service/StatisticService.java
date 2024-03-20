@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 @Slf4j
@@ -21,5 +23,9 @@ public class StatisticService {
 
     public Statistic saveStatistic (Statistic statistic){
         return statisticRepository.save(statistic);
+    }
+
+    public List<Statistic> getStatisticFromLeagueGame(Long id) {
+        return statisticRepository.getAllById(id);
     }
 }
